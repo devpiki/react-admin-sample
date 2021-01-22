@@ -1,0 +1,42 @@
+#footerwrap {
+  width: 100%;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  background-color: #484b4f;
+  height: 30px;
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 1250px;
+
+  .footer {
+    position: relative;
+    width: 1100px;
+    text-align: center;
+    margin: 0 auto;
+    color: #e6e6e6;
+    padding-top: 7px;
+  }
+}
+
+.MuiTabs-scroller.MuiTabs-scrollable{
+  overflow-y: hidden;
+}
+
+.MuiTab-textColorInherit.Mui-selected{
+  background-color: #3f51b5;
+  font-weight: 700;
+}
+
+#user-form{
+  .MuiInputBase-root.MuiInput-root.MuiInput-underline{
+    height: 28px;
+  }
+  label + .MuiInput-formControl{
+    margin-top: 0;
+  }
+}
+
+
