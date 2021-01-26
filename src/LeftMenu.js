@@ -25,8 +25,8 @@ export default function LeftMenu(props){
             key : 'list1',
             icon : <GroupIcon/>
         },{
-            name : '메뉴2',
-            key : 'menu2',
+            name : '데이터수정',
+            key : 'list2',
             icon : <BuildIcon/>
         },{
             name : '메뉴3',

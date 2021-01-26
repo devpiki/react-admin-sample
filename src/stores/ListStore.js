@@ -1,4 +1,4 @@
-import {action, observable} from 'mobx';
+import {action, observable, makeObservable} from 'mobx';
 import axios from 'axios';
 import * as common from "../common/common";
 
@@ -33,16 +33,28 @@ const rows = [
     createData('Ireland2', 'IE2', 4857000, 70273),
     createData('Mexico2', 'MX2', 126577691, 1972550),
     createData('Japan2', 'JP2', 126317000, 377973),
-    createData('France2', 'FR2', 67022000, 640679),
-    createData('United Kingdom2', 'GB2', 67545757, 242495),
-    createData('Russia2', 'RU2', 146793744, 17098246),
 ];
 
 export default class ListStore {
-    @observable list = rows;
-    @observable count = rows.length;
+    @observable list = [];
+    @observable count = 0;
+    @observable searchList = [];
+
+    constructor() {
+        makeObservable(this);
+    }
 
     @action setList = (list, cnt) => {this.list = list;this.count = cnt;}
+
+    @action setSearchList(){
+        let lst = rows.map(e=>{
+            let row = {...e};
+            return row.code[0];
+        });
+        lst = [...new Set(lst)].sort();
+        lst.unshift('ALL');
+        this.searchList = lst;
+    }
 
     @action selectList(code){
         let result = [...rows];
@@ -63,8 +75,42 @@ export default class ListStore {
             if(a[orderBy] === b[orderBy]) return 0;
         });
         this.setList(result, result.length);
-
     }
 
+    @action updateObj(row, open){
+        let that = this;
+        return new Promise(function(resolve, reject){
+            if(open === '추가'){
+                rows.push(row);
+                that.setList(rows, rows.length);
+                that.setSearchList();
+            }else if(open === '수정'){
+                for(let i=0; i<rows.length ; i++){
+                    let obj = rows[i];
+                    if(row.code === obj.code){
+                        rows[i] = row;
+                        break;
+                    }
+                }
+            }
+            resolve();
+        });
+    }
+
+    @action deleteObj(selectRowList){
+        let that = this;
+        return new Promise(function(resolve, reject){
+            for(let i=(rows.length-1); i>=0 ; i--){
+                for(let j=0; j<selectRowList.length ; j++){
+                    if(selectRowList[j].code === rows[i].code){
+                        rows.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+            that.setSearchList();
+            resolve();
+        });
+    }
 
 }

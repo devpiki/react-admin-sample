@@ -38,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
         top: 20,
         width: 1,
     },
+    paper: {
+        color: theme.palette.secondary.main,
+    },
 }));
 const columns = [
     { id: 'name', label: 'Name', minWidth: 170 },
@@ -71,13 +74,12 @@ const List1 = inject('liststore')(observer((props)=>{
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [selectRowList, setSelectRowList] = React.useState([]);
-    const [searchcode, setSearchcode] = React.useState('ALL');
-    const [searchSelect, setSearchSelect] = React.useState([]);
+    const [searchValue, setSearchValue] = React.useState('ALL');
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('name');
 
     const handleChange = (e)=>{
-        setSearchcode(e.target.value||'');
+        setSearchValue(e.target.value||'');
     };
 
     const handleChangePage = (event, newPage) => {
@@ -85,7 +87,6 @@ const List1 = inject('liststore')(observer((props)=>{
     };
 
     const handleChangeRowsPerPage = (event) => {
-        // debugger;
         setRowsPerPage(+event.target.value);
         setPage(0);
         setSelectRowList([]);
@@ -110,7 +111,7 @@ const List1 = inject('liststore')(observer((props)=>{
     const doSearch = (e)=>{
         setSelectRowList([]);
         setPage(0);
-        props.liststore.selectList(searchcode);
+        props.liststore.selectList(searchValue);
     }
 
     const handleRowClick = (e, row)=>{
@@ -134,28 +135,25 @@ const List1 = inject('liststore')(observer((props)=>{
 
 
     React.useEffect(()=>{
-        let lst = props.liststore.list.map(e=>{
-            let row = {...e};
-            return row.code[0];
-        });
-        lst = [...new Set(lst)].sort();
-        lst.unshift('ALL');
-        setSearchSelect(lst);
-        setSearchcode(lst[0]);
+        props.liststore.setSearchList();
+        doSearch();
     }, []);
 
     return (
         <React.Fragment>
             <Title>{title}</Title>
             <Grid container justify="center" spacing={1} style={{marginBottom : '10px'}}>
+                <Grid item xs={12} className={classes.paper}>
+                    ** 기본 리스트, 페이지처리, 정렬, 검색
+                </Grid>
                 <Grid item xs={6} style={{height:'30px'}}>
-                    <NativeSelect value={searchcode} onChange={handleChange}
+                    <NativeSelect value={searchValue} onChange={handleChange}
                                   style={{height : '28px'}}
                                   variant="outlined"
                                   color="primary"
                     >
                         {
-                            !!searchSelect && searchSelect.length >0 && searchSelect.map((opt) => (
+                            !!props.liststore.searchList && props.liststore.searchList.length>0 && props.liststore.searchList.map((opt) => (
                                 <option key={opt} value={opt}>
                                     {opt}
                                 </option>
@@ -166,11 +164,11 @@ const List1 = inject('liststore')(observer((props)=>{
                             style={{marginLeft:'10px'}} size="small" onClick={doSearch}>검색</Button>
                 </Grid>
                 <Grid item xs={6} style={{textAlign : 'right'}}>
-                    <ButtonGroup aria-label="outlined primary button group" size="small">
+                    {/*<ButtonGroup aria-label="outlined primary button group" size="small">
                         <Button color="primary" startIcon={<AddBoxRoundedIcon/>}>추가</Button>
                         <Button color="primary" startIcon={<SaveRoundedIcon/>}>수정</Button>
                         <Button color="secondary" startIcon={<DeleteForeverRoundedIcon/>}>삭제</Button>
-                    </ButtonGroup>
+                    </ButtonGroup>*/}
                 </Grid>
             </Grid>
             <TableContainer component={Paper}>
