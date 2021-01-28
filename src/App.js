@@ -16,7 +16,7 @@ import {
 } from '@material-ui/core';
 import {Close as CloseIcon, Menu as MenuIcon} from '@material-ui/icons';
 import LeftMenu from "./LeftMenu";
-import {List1, Home, NoMatchError, List2} from "./pages";
+import {List1, Home, NoMatchError, List2, List3} from "./pages";
 import LogoutButton from './style/LogoutButton';
 import Footer from "./Footer";
 
@@ -61,6 +61,7 @@ function App() {
         const components = {
             list2: List2,
             list1: List1,
+            list3: List3,
             home: Home,
             404: NoMatchError
         };

@@ -39,6 +39,36 @@ export default class ListStore {
     @observable list = [];
     @observable count = 0;
     @observable searchList = [];
+    @observable columns = [
+        { id: 'name', label: 'Name', minWidth: 170 , required : true},
+        { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 , required : true, unique : true},
+        {
+            id: 'population',
+            label: 'Population',
+            minWidth: 170,
+            align: 'right',
+            format: (value) => value.toLocaleString('en-US'),
+            required : true,
+            type:'number'
+        },
+        {
+            id: 'size',
+            label: 'Size\u00a0(km\u00b2)',
+            minWidth: 170,
+            align: 'right',
+            format: (value) => value.toLocaleString('en-US'),
+            required : true,
+            type:'number'
+        },
+        {
+            id: 'density',
+            label: 'Density',
+            minWidth: 170,
+            align: 'right',
+            format: (value) => value.toFixed(2),
+            readOnly : true
+        },
+    ];
 
     constructor() {
         makeObservable(this);
@@ -64,7 +94,31 @@ export default class ListStore {
             });
         }
         this.setList(result, result.length);
+    }
 
+    @action selectList2(code){
+        let results = [...rows];
+        for(var key in code){
+            if(!code[key]){
+                delete code[key];
+            }
+        }
+        for(var key in code){
+            for(let i=(results.length-1); i>=0 ; i--){
+                let row = results[i];
+                let type = (this.columns.find((obj)=>{return obj.id === key})).type;
+                if(type === 'number' ){
+                    if((+row[key]) < (+code[key])){
+                        results.splice(i, 1);
+                    }
+                }else{
+                    if((row[key].toUpperCase()).indexOf((code[key]).toUpperCase())<0){
+                        results.splice(i, 1);
+                    }
+                }
+            }
+        }
+        this.setList(results, results.length);
     }
 
     @action sortList(order, orderBy){
