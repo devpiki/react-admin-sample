@@ -39,7 +39,7 @@ export default class ListStore {
     @observable list = [];
     @observable count = 0;
     @observable searchList = [];
-    @observable columns = [
+    columns = [
         { id: 'name', label: 'Name', minWidth: 170 , required : true},
         { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 , required : true, unique : true},
         {
@@ -66,7 +66,8 @@ export default class ListStore {
             minWidth: 170,
             align: 'right',
             format: (value) => value.toFixed(2),
-            readOnly : true
+            readOnly : true,
+            type:'number'
         },
     ];
 
@@ -98,12 +99,12 @@ export default class ListStore {
 
     @action selectList2(code){
         let results = [...rows];
-        for(var key in code){
+        for(let key in code){
             if(!code[key]){
                 delete code[key];
             }
         }
-        for(var key in code){
+        for(let key in code){
             for(let i=(results.length-1); i>=0 ; i--){
                 let row = results[i];
                 let type = (this.columns.find((obj)=>{return obj.id === key})).type;

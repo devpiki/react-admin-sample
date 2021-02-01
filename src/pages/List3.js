@@ -12,13 +12,11 @@ import {
     TableHead,
     TablePagination,
     TableRow,
-    NativeSelect,
     Button,
     Input
 } from '@material-ui/core';
-import {TablePaginationActions} from "../actions";
-import {Title, Popup1 as Popup} from "../components";
-import StyledTableCell from '../style/StyledTableCell';
+import {TablePaginationActions, TableHeadActions} from "../actions";
+import {Title} from "../components";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -56,15 +54,6 @@ const List3 = inject('liststore')(observer((props)=>{
         setSelectRowList([]);
     };
 
-    const onSelectAllClick = (event)=>{
-        if (event.target.checked) {
-            const tmp = [...props.liststore.list];
-            setSelectRowList(tmp);
-            return ;
-        }
-        setSelectRowList([]);
-    };
-
     const isSelected = (key)=>{
         let idx = selectRowList.findIndex((item, i)=>{
             return item.code === key;
@@ -76,12 +65,6 @@ const List3 = inject('liststore')(observer((props)=>{
         setSelectRowList([]);
         setPage(0);
         props.liststore.selectList2(searchValue);
-    }
-
-    const onSearchChange = (e)=>{
-        let a = {...searchValue};
-        a[e.target.id] = e.target.value;
-        setSearchValue(a);
     }
 
     const handleRowClick = (e, row)=>{
@@ -96,10 +79,14 @@ const List3 = inject('liststore')(observer((props)=>{
         setSelectRowList(tmp);
     };
 
-    React.useEffect(()=>{
+    /*React.useEffect(()=>{
         props.liststore.setSearchList();
         doSearch();
-    }, []);
+    }, []);*/
+
+    React.useEffect(()=>{
+        doSearch();
+    }, [searchValue]);
 
     return (
         <React.Fragment>
@@ -111,44 +98,16 @@ const List3 = inject('liststore')(observer((props)=>{
             </Grid>
             <TableContainer component={Paper}>
                 <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <StyledTableCell align="center" style={{padding:0}}>
-                                <Checkbox value="all"
-                                    checked={(props.liststore.count>0 && (selectRowList.length === props.liststore.count))?true:false}
-                                    onChange={onSelectAllClick}/>
-                            </StyledTableCell>
-                            {props.liststore.columns.map((column) => (
-                                <StyledTableCell
-                                    key={column.id}
-                                    align={column.align}
-                                    style={{ minWidth: column.minWidth }}
-                                >
-                                    {column.label}
-                                </StyledTableCell>
-                            ))}
-                        </TableRow>
-                        <TableRow>
-                            <TableCell align="center" style={{padding:'1px'}}>
-                                <Button color="primary" variant="outlined" size="small" onClick={doSearch}>검색</Button>
-                            </TableCell>
-                            {props.liststore.columns.map((column) => (
-                                <TableCell
-                                    key={column.id}
-                                    align={column.align}
-                                    style={{ minWidth: column.minWidth, padding : '1px' }}
-                                >
-                                    <Input
-                                        defaultValue=""
-                                        inputProps={{ 'aria-label': 'search' }}
-                                        id={column.id}
-                                        autoComplete="off"
-                                        inputProps={{style:{textAlign : column.align}}}
-                                        onChange={onSearchChange}/>
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
+                    <TableHeadActions
+                        list={props.liststore.list}
+                        count={props.liststore.count}
+                        setSelectRowList={setSelectRowList}
+                        searchValue={searchValue}
+                        setSearchValue={setSearchValue}
+                        selectRowList={selectRowList}
+                        columns={props.liststore.columns}
+                        doSearch={doSearch}
+                    />
                     <TableBody>
                         {(rowsPerPage > 0
                                         ? props.liststore.list.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
