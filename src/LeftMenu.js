@@ -33,8 +33,8 @@ export default function LeftMenu(props){
             key : 'list3',
             icon : <AccessTimeIcon/>
         },{
-            name : '메뉴4',
-            key : 'menu4',
+            name : '서브리스트',
+            key : 'list4',
             icon : <CommentIcon/>
         },{
             name : '메뉴5',

@@ -89,6 +89,7 @@ const List2 = inject('liststore')(observer((props)=>{
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
+        setSelectRowList([]);
     };
 
     const handleChangeRowsPerPage = (event) => {
