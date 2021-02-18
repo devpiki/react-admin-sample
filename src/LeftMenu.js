@@ -37,8 +37,8 @@ export default function LeftMenu(props){
             key : 'list4',
             icon : <CommentIcon/>
         },{
-            name : '메뉴5',
-            key : 'menu5',
+            name : '데이터수정2',
+            key : 'list5',
             icon : <LocationOnIcon/>
         },{
             name : '메뉴6',

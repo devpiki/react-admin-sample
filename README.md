@@ -1,8 +1,14 @@
 # React, mobx, material-ui 로 구현한 admin page
 
 ### `yarn start`
-개발 환경으로 구동
-[http://localhost:9000](http://localhost:9000)
+개발 환경으로 구동 \
+[http://localhost:9000](http://localhost:9000) \
+hot 모드 off
+
+### `yarn starthot`
+개발 환경으로 구동 \
+[http://localhost:9000](http://localhost:9000) \
+hot 모드 on
 
 ### `yarn build`
 `build` 폴더로 해당 파일들 빌드
@@ -32,6 +38,8 @@ left menu, header, footer, 기본 레이아웃, 탭
 ### 서브리스트
 서브 리스트 및 페이징 처리
 
+### 데이터 수정2
+row 추가, 선택 row 수정, 삭제
 
 
 

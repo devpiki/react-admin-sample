@@ -38,7 +38,8 @@
     "eject": "react-scripts eject"
   },
   "scripts": {
-    "start": "webpack-dev-server --config ./config/webpack.config.dev --hot",
+    "starthot": "webpack-dev-server --config ./config/webpack.config.dev --hot",
+    "start": "webpack-dev-server --config ./config/webpack.config.dev --hot false --inline false",
     "build": "webpack --config ./config/webpack.config.prod"
   },
   "eslintConfig": {

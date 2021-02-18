@@ -80,7 +80,6 @@ const List4 = inject('listsubstore')(observer((props)=>{
     };*/
 
     React.useEffect(()=>{
-        debugger;
         props.listsubstore.setSearchList();
         doSearch();
     }, []);
