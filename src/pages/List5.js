@@ -18,7 +18,8 @@ import StyledTableCell from '../style/StyledTableCell';
 import {SearchRounded as SearchRoundedIcon,
     AddBoxRounded as AddBoxRoundedIcon,
     DeleteForeverRounded as DeleteForeverRoundedIcon,
-    SaveRounded as SaveRoundedIcon} from "@material-ui/icons";
+    SaveRounded as SaveRoundedIcon,
+    Check as CheckIcon} from "@material-ui/icons";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -28,6 +29,13 @@ const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
         maxHeight: 336,
+        "& .MuiTableCell-sizeSmall": {
+            padding: '6px'
+        },
+        "& .MuiOutlinedInput-inputMarginDense" : {
+            padding: '8px 9px',
+            fontSize: '0.8125rem'
+        }
     }
 }));
 
@@ -50,14 +58,14 @@ const txt1 = function(props){
 }
 
 const columns = [
-    { id: 'status', label: 'Status', minWidth: 50},
-    { id: 'name', label: 'Name', minWidth: 170 , required : true, ItemNode : txt1},
+    { id: 'status', label: 'Status'/*, minWidth: 40*/},
+    { id: 'name', label: 'Name'/*, minWidth: 100*/ , required : true, ItemNode : txt1},
     { id: 'seq', label: 'Seq', required : true, unique : true, disabled : true, ItemNode : txt1 },
-    { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 , required : true, ItemNode : txt1},
+    { id: 'code', label: 'ISO\u00a0Code'/*, minWidth: 100*/ , required : true, ItemNode : txt1},
     {
         id: 'population',
         label: 'Population',
-        minWidth: 170,
+        /*minWidth: 100,*/
         align: 'right',
         required : true,
         type:'number',
@@ -66,7 +74,7 @@ const columns = [
     {
         id: 'size',
         label: 'Size\u00a0(km\u00b2)',
-        minWidth: 170,
+        /*minWidth: 100,*/
         align: 'right',
         required : true,
         type:'number',
@@ -94,11 +102,10 @@ const List5 = inject('listeditstore')(observer((props)=>{
     const title = '데이터 수정2';
     const classes = useStyles();
     const [selectRowList, setSelectRowList] = React.useState([]);
-    const [searchValue, setSearchValue] = React.useState('ALL');
     const [applyCellValue, setApplyCellValue] = React.useState({});
 
     const handleChange = (e)=>{
-        setSearchValue(e.target.value||'');
+        props.listeditstore.setSearchValue(e.target.value||'');
     };
 
     const handleApplyCellChange = (e, id)=>{
@@ -118,7 +125,8 @@ const List5 = inject('listeditstore')(observer((props)=>{
 
     const doSearch = (e)=>{
         setSelectRowList([]);
-        props.listeditstore.selectList(searchValue);
+        setApplyCellValue({});
+        props.listeditstore.selectList();
     }
 
     const doAdd = () => {
@@ -130,14 +138,6 @@ const List5 = inject('listeditstore')(observer((props)=>{
                 tablePaper.scrollTop = tablePaper.scrollHeight;
             });
     };
-
-    /*const doUpdate = ()=>{
-        if(!selectRowList || selectRowList.length == 0){
-            alert('수정 데이터를 선택해주세요');
-            return false;
-        }
-        props.listeditstore.doUpdate(selectRowList);
-    };*/
 
     const doApplyCell = ()=>{
         if(!selectRowList || selectRowList.length == 0){
@@ -151,6 +151,7 @@ const List5 = inject('listeditstore')(observer((props)=>{
     const handleChangeEdit = (e, id, seq)=>{
         props.listeditstore.handleChange(e, id, seq);
     };
+
     const doDelete=()=>{
         if(!selectRowList || selectRowList.length == 0){
             alert('삭제 데이터를 선택해주세요');
@@ -173,9 +174,19 @@ const List5 = inject('listeditstore')(observer((props)=>{
             alert('저장 데이터를 선택해주세요.');
             return false;
         }
+        props.listeditstore.list.map((o1)=>{
+            let o = {...o1};
+            for(let j=0; j<selectRowList.length ; j++){
+                if(o.seq === selectRowList[j].seq && o.status){
+
+                }
+            }
+        });
         props.listeditstore
             .doSave(selectRowList)
-            .then(()=>{doSearch();alert('저장 되었습니다.');});
+            .then(()=>{
+                doSearch();
+                alert('저장 되었습니다.');});
     };
 
     React.useEffect(()=>{
@@ -188,10 +199,10 @@ const List5 = inject('listeditstore')(observer((props)=>{
             <Title>{title}</Title>
             <Grid container justify="center" spacing={1} style={{marginBottom : '10px'}}>
                 <Grid item xs={12} className={classes.paper}>
-                    ** 추가 : row 추가 / 수정 : 선택한 row 수정모드로 변경 / 저장 : 선택한 row만 저장 / 삭제 : 선택한 row 삭제, insert 데이터는 전체 삭제
+                    ** 추가 : row 추가 / 저장 : 선택한 row만 저장 / 삭제 : 선택한 row 삭제
                 </Grid>
                 <Grid item xs={6} style={{height:'30px'}}>
-                    ISO Code :: <NativeSelect value={searchValue} onChange={handleChange}
+                    ISO Code :: <NativeSelect value={props.listeditstore.searchValue} onChange={handleChange} id="searchValue"
                                   style={{height : '28px'}}
                                   variant="outlined"
                                   color="primary"
@@ -222,7 +233,7 @@ const List5 = inject('listeditstore')(observer((props)=>{
                 <Table size="small" stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <StyledTableCell padding="checkbox">
+                            <StyledTableCell padding="checkbox" style={{textAlign: 'center'}}>
                                 <Checkbox value="all"
                                           checked={(props.listeditstore.count>0
                                               && (selectRowList.length === props.listeditstore.count))?true:false}
@@ -234,7 +245,7 @@ const List5 = inject('listeditstore')(observer((props)=>{
                                     align={column.align}
                                     style={{ minWidth: column.minWidth }}
                                 >
-                                    {column.label}
+                                    {(column.required?<CheckIcon color="secondary" style={{ fontSize: 10 }}/>:null)} {column.label}
                                 </StyledTableCell>
                             ))}
                         </TableRow>

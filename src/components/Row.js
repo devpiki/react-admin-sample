@@ -16,7 +16,7 @@ export default function Row(props){
     }
 
     const handleRowClick = (e, row)=>{
-        if(!(e.target.tagName.toUpperCase() === 'TD' || e.target.type.toUpperCase() === 'CHECKBOX')){
+        if(!(e.target.tagName.toUpperCase() === 'TD' || e.target.tagName.toUpperCase() === 'TR' || e.target.type.toUpperCase() === 'CHECKBOX')){
             return;
         }
         let key = row.seq;
@@ -24,7 +24,7 @@ export default function Row(props){
         let selectedIndex = isSelected(key);
         if (selectedIndex === -1) {
             row.status = 'update';
-            tmp.push(row);
+            tmp.push({...row});
         } else if (selectedIndex >= 0) {
             props.getRollBackListObj(key);
             tmp.splice(selectedIndex, 1);
@@ -44,7 +44,7 @@ export default function Row(props){
                   aria-checked={isItemSelected}
                   selected={(isItemSelected>-1)?true:false}
         >
-            <TableCell padding="checkbox" style={{ width: 100 }}>
+            <TableCell padding="checkbox" style={{ width: 100, textAlign:'center' }}>
                 <Checkbox value={key}
                           checked={(isItemSelected>-1)?true:false}
                 />

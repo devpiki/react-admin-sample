@@ -10,7 +10,7 @@ let rows = [
     createData(1,'India', 'IN', 1324171354, 3287263, 'Y'),
     createData(2,'China', 'CN', 1403500365, 9596961, 'N'),
     createData(3,'Italy', 'IT', 60483973, 301340, 'Y'),
-    /*createData(4,'United States', 'US', 327167434, 9833520, 'Y'),
+    createData(4,'United States', 'US', 327167434, 9833520, 'Y'),
     createData(5,'Canada', 'CA', 37602103, 9984670, 'Y'),
     createData(6,'Australia', 'AU', 25475400, 7692024, 'N'),
     createData(7,'Germany', 'DE', 83019200, 357578, 'Y'),
@@ -31,17 +31,20 @@ let rows = [
     createData(22,'Germany2', 'DE2', 83019200, 357578, 'Y'),
     createData(23,'Ireland2', 'IE2', 4857000, 70273, 'N'),
     createData(24,'Mexico2', 'MX2', 126577691, 1972550, 'Y'),
-    createData(25,'Japan2', 'JP2', 126317000, 377973, 'N'),*/
+    createData(25,'Japan2', 'JP2', 126317000, 377973, 'N'),
 ];
 
 export default class ListEditStore {
     @observable list = [];
     @observable count = 0;
     @observable searchList = [];
+    @observable searchValue = 'ALL';
 
     constructor() {
         makeObservable(this);
     }
+
+    @action setSearchValue = (s) => {this.searchValue = s;}
 
     @action setList = (list, cnt) => {this.list = list;this.count = cnt;}
 
@@ -53,13 +56,16 @@ export default class ListEditStore {
         lst = [...new Set(lst)].sort();
         lst.unshift('ALL');
         this.searchList = lst;
+        if(lst.join('|').indexOf(this.searchValue) === -1){
+            this.setSearchValue('ALL');
+        }
     }
 
-    @action selectList(code){
+    @action selectList(){
         let result = [...rows];
-        if(code !== 'ALL'){
+        if(this.searchValue !== 'ALL'){
             result = rows.filter((item) => {
-                return item.code[0] === code;
+                return item.code[0] === this.searchValue;
             });
         }
         this.setList(result, result.length);
@@ -84,7 +90,7 @@ export default class ListEditStore {
     @computed get getList() {
         return this.list.map((obj)=>{
             if(obj['population'] && obj['size']){
-                obj['density'] = (obj['population'] / obj['size']);
+                obj['density'] = (obj['population'] / obj['size']).toFixed(3);
             }else{
                 obj['density'] = 0;
             }
@@ -95,7 +101,7 @@ export default class ListEditStore {
     @action doAdd(){
         const that = this;
         return new Promise(function(resolve, reject){
-            const r = Math.floor(Math.random()*10000000000000000);
+            const r = Math.floor(Math.random()*10000000000);
             const row = {seq:r, status:'insert'};
             that.setList([...that.list, row], that.count+1);
             resolve(row);
@@ -135,7 +141,8 @@ export default class ListEditStore {
         const that = this;
         //ajax로 구현한다
         return new Promise(function(resolve, reject){
-            that.list.map((o)=>{
+            that.list.map((o1)=>{
+                let o = {...o1};
                 for(let j=0; j<selectRowList.length ; j++){
                     if(o.seq === selectRowList[j].seq && o.status){
                         o.useyn = o.useyn||'Y';
@@ -168,7 +175,7 @@ export default class ListEditStore {
             }
             if(targetRow){
                 if(row['population'] && row['size']){
-                    row['density'] = (row['population'] / row['size']);
+                    row['density'] = (row['population'] / row['size']).toFixed(3);
                 }else{
                     row['density'] = 0;
                 }
@@ -178,12 +185,13 @@ export default class ListEditStore {
     }
 
     @action getRollBackListObj(seq){
-        this.list = this.list.map((row)=>{
-            if(row.seq === seq){
-                row = rows.find(e=>e.seq === seq);
-            }
-            return row;
-        });
+        let idx = this.list.findIndex(e=>e.seq === seq);
+        let status = this.list[idx].status;
+        if(status === 'insert'){
+            this.list.splice(idx, 1);
+        }else{
+            this.list[idx] = {...rows.find(e=>e.seq === seq)};
+        }
     }
 
 
