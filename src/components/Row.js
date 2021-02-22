@@ -60,7 +60,11 @@ export default function Row(props){
                                     onChange={(e)=>{handleChange(e, column.id, row['seq'])}}
                                     value={value||''}
                                     inputProps={{style:{textAlign:column.align||''}}}
-                                    disabled={column.disabled}/>)
+                                    disabled={column.disabled}
+                                    error={!value?true:false}
+                                    type={column.type||''}
+                                    InputLabelProps={(column.type === 'number')?({shrink: true}):({})}
+                                    placeholder={column.label}/>)
                                 :(value)
                         }
                     </TableCell>

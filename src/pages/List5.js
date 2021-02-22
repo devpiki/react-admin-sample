@@ -53,6 +53,9 @@ const txt1 = function(props){
                    value={props.value}
                    inputProps={props.inputProps}
                    disabled={props.disabled}
+                   error={props.error}
+                   type={props.type}
+                   placeholder={props.placeholder}
         />
     );
 }
@@ -174,14 +177,19 @@ const List5 = inject('listeditstore')(observer((props)=>{
             alert('저장 데이터를 선택해주세요.');
             return false;
         }
-        props.listeditstore.list.map((o1)=>{
-            let o = {...o1};
-            for(let j=0; j<selectRowList.length ; j++){
-                if(o.seq === selectRowList[j].seq && o.status){
-
+        for(let i=0; i<columns.length ; i++){
+            const column = columns[i];
+            if(column.required){
+                for(let j=0; j<selectRowList.length ; j++){
+                    const sr = selectRowList[j];
+                    let tmp = props.listeditstore.list.find((l)=>(l.seq === sr.seq));
+                    if(!tmp[column.id]){
+                        alert(column.label + ' 는 필수값입니다.');
+                        return false;
+                    }
                 }
             }
-        });
+        }
         props.listeditstore
             .doSave(selectRowList)
             .then(()=>{
